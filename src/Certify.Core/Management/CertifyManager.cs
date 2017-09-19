@@ -212,7 +212,7 @@ namespace Certify.Management
                 // start with a failure result, set to success when succeeding
                 var result = new CertificateRequestResult { ManagedItem = managedSite, IsSuccess = false, Message = "" };
 
-                var config = _iisManager.GetCurrentCertRequestConfig(managedSite);
+                var config = managedSite.RequestConfig;
                 try
                 {
                     // run pre-request script, if set
@@ -238,6 +238,9 @@ namespace Certify.Management
                     }
 
                     LogMessage(managedSite.Id, $"Beginning Certificate Request Process: {managedSite.Name}");
+
+                    // after the pre-request script has run (and potentially modified managedSite)
+                    config = _iisManager.GetCurrentCertRequestConfig(managedSite);
 
                     //enable or disable EFS flag on private key certs based on preference
                     if (Properties.Settings.Default.EnableEFS)
